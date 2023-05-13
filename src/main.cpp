@@ -5,10 +5,10 @@
 #include "galvo.h"
 
 Galvo x{19, 22, 9, 0};
-Galvo y{19, 22, 9, 0};  // Set pwm and dir
-Display out{x, y, 10};  // Set laser pwm
+Galvo y{13, 14, 9, 0};  // Set pwm and dir
+Display out{x, y, 16};  // Set laser pwm
 
-uint32_t delay_time = 1;
+float delay_time = 0.1;
 void setup()
 {
     Serial.begin(115200);
@@ -20,11 +20,14 @@ void loop()
 {
     // position is -100 to 100
     // Make a circle with radius 100
+    // static TickType_t xPrevWakeTime = xTaskGetTickCount();
     static uint16_t timer = 0;
     float x_pos = 100 * cosf(timer * M_PI / 180);  // radians
     float y_pos = 100 * cosf(timer * M_PI / 180);
     out.SetPosition(x_pos, y_pos, 100);
-    delay(delay_time);
+    // xTaskDelayUntil(&xPrevWakeTime, delay_time / portTICK_PERIOD_MS);
+    // delay(delay_time);
+    delayMicroseconds(delay_time * 1000);
     timer = (timer + 1) % 360;
     /* if (timer % 10 == 0)
     {

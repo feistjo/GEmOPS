@@ -1,3 +1,5 @@
+#pragma once
+
 #include "ESP32_FastPWM.h"
 #include "galvo.h"
 
