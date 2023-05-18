@@ -12,6 +12,13 @@ float delay_time = 0.1;
 void setup()
 {
     Serial.begin(115200);
+    std::vector<Display::Point> *circle = new std::vector<Display::Point>{};
+    for (uint16_t i = 0; i < 360; i++)
+    {
+        circle->push_back({100 * cosf(i * M_PI / 180), 100 * cosf(i * M_PI / 180)});
+    }
+    out.SetImage(circle);
+    xTaskCreate([](void *param) { out.DisplayImage(); }, "Display", 1024, NULL, 2, NULL);
     // Serial.println("Ender an int to set galvo: ");
     //  put your setup code here, to run once:
 }
