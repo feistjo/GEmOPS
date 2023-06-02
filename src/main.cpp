@@ -3,24 +3,30 @@
 #include "ESP32_FastPWM.h"
 #include "display.h"
 #include "galvo.h"
+#include "web_interface.h"
 
 Galvo x{19, 22, 9, 0, 0};
 Galvo y{13, 14, 9, 0, 1};  // Set pwm and dir
 Display out{x, y, 16};     // Set laser pwm
 
+std::vector<Display::Point> points{};
+
+WebInterface web_interface{"GEmOPS", "pleasebuy", points};
+
 float delay_time = 0.1;
 void setup()
 {
     Serial.begin(115200);
-    std::vector<Display::Point> *circle = new std::vector<Display::Point>{};
+    web_interface.Initialize();
+    /* std::vector<Display::Point> *circle = new std::vector<Display::Point>{}; */
     for (uint16_t i = 0; i < 360; i++)
     {
-        circle->push_back({50 + (50 * cosf(i * M_PI / 180)), 50 + (50 * cosf(i * M_PI / 180))});
+        points.push_back({50 + (50 * cosf(i * M_PI / 180)), 50 + (50 * cosf(i * M_PI / 180))});
     }
     /* circle->push_back({0, -100});
     circle->push_back({0, 100});
     circle->push_back({100, 0}); */
-    out.SetImage(circle);
+    out.SetImage(&points);
     xTaskCreatePinnedToCore(
         [](void *param) { out.DisplayImage(); }, "Display", 4096, NULL, 2, NULL, ARDUINO_RUNNING_CORE);
     vTaskDelete(NULL);

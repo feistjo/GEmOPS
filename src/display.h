@@ -96,7 +96,7 @@ private:
     uint8_t laser_pwm_pin_;
     ESP32_FAST_PWM* laser_pwm_;
 
-    const float kVelocity{0.1};
+    const float kVelocity{01};
     const uint32_t kDelayTime{10};
     uint32_t pos_in_interpolation_ = 0;
 

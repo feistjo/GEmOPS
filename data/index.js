@@ -101,19 +101,20 @@ function convertSVG(current_svg_xml) {
     var paths_info = getInfosFromPaths(paths);
     var offset_path_x = (paths_info.x * paths_info.scale * -1) + (paper.canvas.clientWidth / 2) - (paths_info.width * paths_info.scale / 2);
     var offset_path_y = (paths_info.y * paths_info.scale * -1) + (paper.canvas.clientHeight / 2) - (paths_info.height * paths_info.scale / 2);
-    var all_points = "";
+    var all_points = {};
     var all_points_count = 0;
     for (var i = 0; i < paths.length; ++i) {
         var path = $($(paths).get(i)).attr('d').replace(' ', ',');
 
         // get points at regular intervals
-        var data_points = "";
+        //var data_points = "";
         var color = 'red';
         var c;
+        
         for (c = 0; c < Raphael.getTotalLength(path); c += step_point) {
             var point = Raphael.getPointAtLength(path, c);
 
-            data_points += point.x + "," + point.y + "&#13;";
+            all_points(c+i)= {"x" : point.x, "y" : point.y};// TODO: make sure this works :)
             var circle = paper.circle(point.x * paths_info.scale, point.y * paths_info.scale, 2)
                 .attr("fill", color)
                 .attr("stroke", "none")
@@ -121,11 +122,15 @@ function convertSVG(current_svg_xml) {
         }
 
         all_points_count += c;
-        all_points += data_points + "#&#13;";
+        //all_points += data_points + "#&#13;";
 //        addBelow("Path " + i, color, data_points, c / step_point);
     }
+    
+    all_points["num_points"] = all_points_count;
+    
     // Send that shit over!
-    initWebSocket();
+    websocket.send(JSON.stringify(all_points));
+
     
 
 //    addBelow("All Paths", "#2A2A2A", all_points, all_points_count / step_point);
