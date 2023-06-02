@@ -19,7 +19,16 @@ function onLoad(event) {
 }
 
 function initWebSocket() {
+    console.log('Trying to open a WebSocket connection...');
     websocket = new WebSocket(gateway);
+    websocket.onopen    = onOpen;
+    websocket.onclose   = onClose;
+    websocket.onmessage = onMessage;
+}
+
+function onMessage(event) {
+    console.log(`Received a notification from ${event.origin}`);
+    console.log(event);
 }
 
 function getInfosFromPaths(paths) {
@@ -115,6 +124,9 @@ function convertSVG(current_svg_xml) {
         all_points += data_points + "#&#13;";
 //        addBelow("Path " + i, color, data_points, c / step_point);
     }
+    // Send that shit over!
+    initWebSocket();
+    
 
 //    addBelow("All Paths", "#2A2A2A", all_points, all_points_count / step_point);
     
