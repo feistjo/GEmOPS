@@ -5,6 +5,22 @@ var display_img = document.getElementById("user_img");
 paper = Raphael(document.getElementById("canvas"), '50%', '50%');
 current_displayed_paths = null;
 
+var gateway = `ws://${window.location.hostname}/ws`;
+var websocket;
+
+// ----------------------------------------------------------------------------
+// Websocket
+// ----------------------------------------------------------------------------
+
+window.addEventListener('load', onLoad);
+
+function onLoad(event) {
+    initWebSocket();
+}
+
+function initWebSocket() {
+    websocket = new WebSocket(gateway);
+}
 
 function getInfosFromPaths(paths) {
     var paths_info = [];
