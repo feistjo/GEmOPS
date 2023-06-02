@@ -64,6 +64,11 @@ void onEvent(AsyncWebSocket       *server,
     }
 }
 
+void notifyClients() {
+    // NOthing here unless we want to use it 
+    // ws.textAll(led.on ? "on" : "off");
+}
+
 void setup() {
     Serial.begin(115200); delay(500);
     WiFi.softAP(ssid, password);
