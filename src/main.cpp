@@ -4,9 +4,9 @@
 #include "display.h"
 #include "galvo.h"
 
-Galvo x{19, 22, 9, 0};
-Galvo y{13, 14, 9, 0};  // Set pwm and dir
-Display out{x, y, 16};  // Set laser pwm
+Galvo x{19, 22, 9, 0, 0};
+Galvo y{13, 14, 9, 0, 1};  // Set pwm and dir
+Display out{x, y, 16};     // Set laser pwm
 
 float delay_time = 0.1;
 void setup()
@@ -15,12 +15,17 @@ void setup()
     std::vector<Display::Point> *circle = new std::vector<Display::Point>{};
     for (uint16_t i = 0; i < 360; i++)
     {
-        circle->push_back({100 * cosf(i * M_PI / 180), 100 * cosf(i * M_PI / 180)});
+        circle->push_back({50 + (50 * cosf(i * M_PI / 180)), 50 + (50 * cosf(i * M_PI / 180))});
     }
+    /* circle->push_back({0, -100});
+    circle->push_back({0, 100});
+    circle->push_back({100, 0}); */
     out.SetImage(circle);
-    xTaskCreate([](void *param) { out.DisplayImage(); }, "Display", 1024, NULL, 2, NULL);
-    // Serial.println("Ender an int to set galvo: ");
-    //  put your setup code here, to run once:
+    xTaskCreatePinnedToCore(
+        [](void *param) { out.DisplayImage(); }, "Display", 4096, NULL, 2, NULL, ARDUINO_RUNNING_CORE);
+    vTaskDelete(NULL);
+    //  Serial.println("Ender an int to set galvo: ");
+    //   put your setup code here, to run once:
 }
 
 void loop()
@@ -31,9 +36,9 @@ void loop()
     static uint16_t timer = 0;
     float x_pos = 100 * cosf(timer * M_PI / 180);  // radians
     float y_pos = 100 * cosf(timer * M_PI / 180);
-    out.SetPosition(x_pos, y_pos, 100);
-    // xTaskDelayUntil(&xPrevWakeTime, delay_time / portTICK_PERIOD_MS);
-    // delay(delay_time);
+    // out.SetPosition(x_pos, y_pos, 100);
+    //  xTaskDelayUntil(&xPrevWakeTime, delay_time / portTICK_PERIOD_MS);
+    //  delay(delay_time);
     delayMicroseconds(delay_time * 1000);
     timer = (timer + 1) % 360;
     /* if (timer % 10 == 0)

@@ -7,8 +7,9 @@
 class Galvo
 {
 public:
-    Galvo(uint8_t pwm, uint8_t dir, uint8_t n_bits, bool invert_dir)
+    Galvo(uint8_t pwm, uint8_t dir, uint8_t n_bits, bool invert_dir, uint8_t pwm_channel)
         : pwm_pin_{pwm},
+          pwm_channel_{pwm_channel},
           pwm_{new ESP32_FAST_PWM(pwm_pin_, pwm_frequency, 0, pwm_channel, pwm_resolution)},
           dir_{dir},
           n_bits_{n_bits},
@@ -31,8 +32,9 @@ public:
 private:
     float pwm_resolution{8};
     float pwm_frequency{200000};
-    uint8_t pwm_channel{0};
+
     uint8_t pwm_pin_;
+    uint8_t pwm_channel_{0};
     ESP32_FAST_PWM* pwm_;
     uint8_t dir_;
     uint8_t n_bits_;

@@ -30,7 +30,8 @@ public:
             free(points_);
         }
         points_ = new_image;
-        current_point_idx_ = -1;
+        current_point_idx_ = 0;
+        pos_in_interpolation_ = 0;
     }
 
     void SetPosition(float x, float y, float intensity)
@@ -48,15 +49,36 @@ public:
         {
             if (points_)
             {
+                /* while (1)
+                {
+                    Serial.println(current_point_idx_);
+                    delay(500);
+                } */
                 Point current_point_ = points_->at(current_point_idx_);
                 uint16_t next_point_idx = current_point_idx_ + 1 < points_->size() ? current_point_idx_ + 1 : 0;
                 Point next_point_ = points_->at(next_point_idx);
                 float dx = next_point_.x - current_point_.x;
                 float dy = next_point_.y - current_point_.y;
-                float dist = dx + dy;
-                if ((dx >= 0 ? current_point_.x + (dx * kVelocity / dist) >= next_point_.x
-                             : current_point_.x + (dx * kVelocity / dist) <= next_point_.x)
-                    || current_point_.y + (dy * kVelocity / dist) >= next_point_.y)
+                float dist = abs(dx + dy);
+                // Serial.println(current_point_.x + (pos_in_interpolation_ * dx * kVelocity / dist));
+                if ((dx >= 0 ? current_point_.x + (pos_in_interpolation_ * dx * kVelocity / dist) >= next_point_.x
+                             : current_point_.x + (pos_in_interpolation_ * dx * kVelocity / dist) <= next_point_.x)
+                    && (dy >= 0 ? current_point_.y + (pos_in_interpolation_ * dy * kVelocity / dist) >= next_point_.y
+                                : current_point_.y + (pos_in_interpolation_ * dy * kVelocity / dist) <= next_point_.y))
+                {
+                    Serial.printf("dx: %4.2f, dy: %4.2f\n", dx, dy);
+                    current_point_idx_ = next_point_idx;
+                    pos_in_interpolation_ = 0;
+                }
+                else
+                {
+                    pos_in_interpolation_++;
+                }
+                // Serial.println(current_point_.y + (pos_in_interpolation_ * kVelocity * dy / dist));
+                SetPosition({current_point_.x + (pos_in_interpolation_ * kVelocity * dx / dist),
+                             current_point_.y + (pos_in_interpolation_ * kVelocity * dy / dist)},
+                            100);
+                delayMicroseconds(kDelayTime);
             }
             else
             {
@@ -70,13 +92,15 @@ private:
     Galvo& y_;
     float pwm_resolution{8};
     float pwm_frequency{200000};
-    uint8_t pwm_channel{0};
+    uint8_t pwm_channel{2};
     uint8_t laser_pwm_pin_;
     ESP32_FAST_PWM* laser_pwm_;
 
-    const float kVelocity{1};
+    const float kVelocity{0.1};
+    const uint32_t kDelayTime{10};
+    uint32_t pos_in_interpolation_ = 0;
 
     Point current_point_{0, 0};
-    int16_t current_point_idx_ = -1;
+    uint16_t current_point_idx_ = 0;
     std::vector<Point>* points_ = nullptr;
 };
