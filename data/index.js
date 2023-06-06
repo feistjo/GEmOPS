@@ -114,7 +114,7 @@ function convertSVG(current_svg_xml) {
         for (c = 0; c < Raphael.getTotalLength(path); c += step_point) {
             var point = Raphael.getPointAtLength(path, c);
 
-            all_points(c+i)= {"x" : point.x, "y" : point.y};// TODO: make sure this works :)
+            all_points[c+i]= {"x" : point.x, "y" : point.y}; // TODO: this should work now 6/6
             var circle = paper.circle(point.x * paths_info.scale, point.y * paths_info.scale, 2)
                 .attr("fill", color)
                 .attr("stroke", "none")
