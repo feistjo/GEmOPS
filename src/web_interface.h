@@ -136,8 +136,12 @@ private:
             Serial.printf("Received %d points\n", num_points);
             for (int i = 0; i < num_points; i++)
             {
-                Serial.printf("Point %d\n", i);
-                points->push_back(Display::Point{json["points"][String(i)]["x"], json["points"][String(i)]["y"]});
+                // Serial.printf("Point %d: %f, %f\n", i, json[String(i)]["x"], json[String(i)]["y"]);
+                float x = json[String(i)]["x"];
+                float y = json[String(i)]["y"];
+                Serial.printf("%s\n", json[String(i)]);
+                Serial.printf("Point %d: %f, %f\n", i, x, y);
+                points->push_back(Display::Point{x, y});
             }
             display_->SetImage(points);
             Serial.println("Updated image");
@@ -171,7 +175,7 @@ private:
 
             const uint16_t size = JSON_OBJECT_SIZE(512);
             StaticJsonDocument<size> json;
-            
+
             // DynamicJsonDocument json{10000};
             DeserializationError err = deserializeJson(json, full_data);
             if (err)
@@ -188,8 +192,8 @@ private:
             Serial.printf("Received %d points\n", num_points);
             for (int i = 0; i < num_points; i++)
             {
-                Serial.printf("Point %d\n", i);
-                points->push_back(Display::Point{json["points"][String(i)]["x"], json["points"][String(i)]["y"]});
+                Serial.printf("Point %d: %f, %f\n", i, json[String(i)]["x"], json[String(i)]["y"]);
+                points->push_back(Display::Point{json[String(i)]["x"], json[String(i)]["y"]});
             }
             display_->SetImage(points);
             Serial.println("Updated image");

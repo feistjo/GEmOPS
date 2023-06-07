@@ -22,7 +22,7 @@ void setup()
     Serial.begin(115200);
     web_interface.Initialize();
     /* std::vector<Display::Point> *circle = new std::vector<Display::Point>{}; */
-    for (uint16_t i = 0; i < 360; i++)
+    for (uint16_t i = 0; i < 360; i += 20)
     {
         points.push_back({50 + (50 * cosf(i * M_PI / 180)), 50 + (50 * cosf(i * M_PI / 180))});
     }
