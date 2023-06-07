@@ -8,10 +8,13 @@
 Galvo x{19, 22, 9, 0, 0};
 Galvo y{13, 14, 9, 0, 1};  // Set pwm and dir
 Display out{x, y, 16};     // Set laser pwm
+/* Galvo x{0, 1, 9, 0, 0};
+Galvo y{2, 3, 9, 0, 1};
+Display out{x, y, 4};  // Set laser pwm */
 
 std::vector<Display::Point> points{};
 
-WebInterface web_interface{"GEmOPS", "pleasebuy", points};
+WebInterface web_interface{"GEmOPS", "pleasebuy", out};
 
 float delay_time = 0.1;
 void setup()
@@ -29,9 +32,9 @@ void setup()
     out.SetImage(&points);
     xTaskCreatePinnedToCore(
         [](void *param) { out.DisplayImage(); }, "Display", 4096, NULL, 2, NULL, ARDUINO_RUNNING_CORE);
-    vTaskDelete(NULL);
-    //  Serial.println("Ender an int to set galvo: ");
-    //   put your setup code here, to run once:
+    // vTaskDelete(NULL);
+    //   Serial.println("Ender an int to set galvo: ");
+    //    put your setup code here, to run once:
 }
 
 void loop()

@@ -1,41 +1,37 @@
 <!DOCTYPE html>
 <html>
-
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="author" content="GEmOPS Team">
-  <meta name="description" content="GEmOPS Image Upload">
-  <title>GEmOPS</title>
-  <link rel="stylesheet" href="index.css">
-    <script src="raphael.js"></script>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="author" content="GEmOPS Team" />
+    <meta name="description" content="GEmOPS Image Upload" />
+    <title>GEmOPS</title>
+    <link rel="stylesheet" href="index.css" />
+    <script src="raphael.min.js"></script>
     <script src="snap.svg-min.js"></script>
     <script src="jquery-2.2.1.min.js"></script>
-   
-</head>
+  </head>
 
-<body>
-  <div class="words">
-    <h1>GEmOPS Official Website</h1>
-    <h2>So you've bought GEmOPS, now what? Upload a photo below to find out...</h2>
-  </div>
-    
+  <body>
+    <div class="words">
+      <h1>GEmOPS Official Website</h1>
+      <h2>
+        So you've bought GEmOPS, now what? Upload a photo below to find out...
+      </h2>
+    </div>
+
     <form id="file_form" method="post" enctype="multipart/form-data">
-        <label for="file">Upload SVG here!</label>
-        <input id="my_file" name="file" type="file" />
-        <!--<button id="upload_button">Upload</button>-->
+      <label for="file">Upload SVG here!</label>
+      <input id="my_file" name="file" type="file" />
+      <!--<button id="upload_button">Upload</button>-->
     </form>
-    
+
     <p id="test">original</p>
-    
-     <div id="canvas"></div>
-    
 
-</body>
-<!--<script src="https://github.com/adobe-webplatform/Snap.svg/raw/master/dist/snap.svg-min.js"></script>-->
+    <div id="canvas"></div>
+  </body>
+  <!--<script src="https://github.com/adobe-webplatform/Snap.svg/raw/master/dist/snap.svg-min.js"></script>-->
 
-<script src="index.js"></script>
-
-
+  <script src="index.js"></script>
 </html>

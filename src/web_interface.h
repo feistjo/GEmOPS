@@ -12,9 +12,11 @@
 class WebInterface
 {
 public:
-    WebInterface(char *ssid, char *password, std::vector<Display::Point> &points) : kSsid{ssid}, kPassword{password}
+    WebInterface(char *ssid, char *password, Display &display /* std::vector<Display::Point> &points */)
+        : kSsid{ssid}, kPassword{password}
     {
-        points_ = &points;
+        /* points_ = &points; */
+        display_ = &display;
     }
 
     void Initialize()
@@ -31,10 +33,13 @@ private:
     const char *kSsid;
     const char *kPassword;
 
-    static std::vector<Display::Point> *points_;
+    // static std::vector<Display::Point> *points_;
+    static Display *display_;
 
     AsyncWebServer server{80};
     AsyncWebSocket ws{"/ws"};
+
+    static std::vector<char> aws_data;
 
     void initWebServer()
     {
@@ -97,11 +102,25 @@ private:
 
     static void handleWebSocketMessage(void *arg, uint8_t *data, size_t len)
     {
+        // Serial.println("Handle ws message");
         AwsFrameInfo *info = (AwsFrameInfo *)arg;
+        /* Serial.printf("Final: %d, index: %d, len: %d, len: %d, opcode: %d\n",
+                      info->final,
+                      info->index,
+                      info->len,
+                      len,
+                      info->opcode == WS_TEXT);
+        Serial.println(info->opcode); */
+        Serial.println("Handle");
+        Serial.printf("%s\n", data);
         if (info->final && info->index == 0 && info->len == len && info->opcode == WS_TEXT)
         {
-            const uint8_t size = JSON_OBJECT_SIZE(10000);
+            aws_data.clear();
+            Serial.println("Received single ws message");
+
+            const uint16_t size = JSON_OBJECT_SIZE(512);
             StaticJsonDocument<size> json;
+            // DynamicJsonDocument json{10000};
             DeserializationError err = deserializeJson(json, data);
             if (err)
             {
@@ -110,13 +129,71 @@ private:
                 return;
             }
 
-            points_->clear();
+            std::vector<Display::Point> *points = new std::vector<Display::Point>;
+            // points_->clear();
 
             int num_points = json["num_points"];
+            Serial.printf("Received %d points\n", num_points);
             for (int i = 0; i < num_points; i++)
             {
-                points_->push_back(Display::Point{json["points"][i]["x"], json["points"][i]["y"]});
+                Serial.printf("Point %d\n", i);
+                points->push_back(Display::Point{json["points"][String(i)]["x"], json["points"][String(i)]["y"]});
             }
+            display_->SetImage(points);
+            Serial.println("Updated image");
+        }
+        else if (!info->final || len + aws_data.size() != info->len)
+        {
+            Serial.println("Not final");
+            Serial.println("Info len, size, len, index");
+            Serial.println(info->len);
+            Serial.println(aws_data.size());
+            Serial.println(len);
+            Serial.println(info->index);
+            for (size_t i = 0; i < len; i++)
+            {
+                aws_data.push_back(data[i]);
+            }
+        }
+        else
+        {
+            Serial.println("Final");
+            for (size_t i = 0; i < len; i++)
+            {
+                aws_data.push_back(data[i]);
+            }
+            uint8_t full_data[aws_data.size()];
+            for (size_t i = 0; i < aws_data.size(); i++)
+            {
+                full_data[i] = aws_data[i];
+            }
+            // Serial.printf("%s\n", full_data);
+
+            const uint16_t size = JSON_OBJECT_SIZE(512);
+            StaticJsonDocument<size> json;
+            
+            // DynamicJsonDocument json{10000};
+            DeserializationError err = deserializeJson(json, full_data);
+            if (err)
+            {
+                Serial.print(F("deserializeJson() failed with code "));
+                Serial.println(err.c_str());
+                return;
+            }
+
+            std::vector<Display::Point> *points = new std::vector<Display::Point>;
+            // points_->clear();
+
+            int num_points = json["num_points"];
+            Serial.printf("Received %d points\n", num_points);
+            for (int i = 0; i < num_points; i++)
+            {
+                Serial.printf("Point %d\n", i);
+                points->push_back(Display::Point{json["points"][String(i)]["x"], json["points"][String(i)]["y"]});
+            }
+            display_->SetImage(points);
+            Serial.println("Updated image");
+            aws_data.clear();
         }
     }
 

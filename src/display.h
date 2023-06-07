@@ -25,13 +25,17 @@ public:
     // Takes ownership over the image, frees old image
     void SetImage(std::vector<Point>* new_image)
     {
-        if (points_)
-        {
-            free(points_);
-        }
+        new_points_ = new_image;
+        /* std::vector<Point>* old_points = points_;
+
         points_ = new_image;
         current_point_idx_ = 0;
         pos_in_interpolation_ = 0;
+        if (old_points)
+        {
+            old_points->clear();
+            free(old_points);
+        } */
     }
 
     void SetPosition(float x, float y, float intensity)
@@ -47,6 +51,10 @@ public:
     {
         for (;;)
         {
+            if (new_points_)
+            {
+                SetImageInternal();
+            }
             if (points_)
             {
                 /* while (1)
@@ -66,7 +74,7 @@ public:
                     && (dy >= 0 ? current_point_.y + (pos_in_interpolation_ * dy * kVelocity / dist) >= next_point_.y
                                 : current_point_.y + (pos_in_interpolation_ * dy * kVelocity / dist) <= next_point_.y))
                 {
-                    Serial.printf("dx: %4.2f, dy: %4.2f\n", dx, dy);
+                    // Serial.printf("dx: %4.2f, dy: %4.2f\n", dx, dy);
                     current_point_idx_ = next_point_idx;
                     pos_in_interpolation_ = 0;
                 }
@@ -103,4 +111,19 @@ private:
     Point current_point_{0, 0};
     uint16_t current_point_idx_ = 0;
     std::vector<Point>* points_ = nullptr;
+    std::vector<Point>* new_points_ = nullptr;
+
+    void SetImageInternal()
+    {
+        Serial.println("internal");
+        if (points_)
+        {
+            points_->clear();
+            // free(points_); //leak probably because breaks otherwise
+        }
+        points_ = new_points_;
+        current_point_idx_ = 0;
+        pos_in_interpolation_ = 0;
+        new_points_ = nullptr;
+    }
 };
