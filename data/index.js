@@ -46,16 +46,6 @@ function getInfosFromPaths(paths) {
     var bbox_path = shape.getBBox();
     shape.remove();
 
-    // Draw the shape
-    // var shape = paper.path(path);
-    // var bbox_path = shape.getBBox();
-    // shape.remove();
-
-    // Show shapes infos
-    // paper.path(path);
-    // var container = paper.rect(bbox_path.x, bbox_path.y, bbox_path.width, bbox_path.height);
-    // container.attr("stroke", "red");
-
     if (!initialized) {
       initialized = true;
       paths_info.bbox_top =
