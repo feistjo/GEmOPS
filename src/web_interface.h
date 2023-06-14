@@ -120,7 +120,6 @@ private:
 
             const uint16_t size = JSON_OBJECT_SIZE(512);
             StaticJsonDocument<size> json;
-            // DynamicJsonDocument json{10000};
             DeserializationError err = deserializeJson(json, data);
             if (err)
             {
@@ -130,7 +129,6 @@ private:
             }
 
             std::vector<Display::Point> *points = new std::vector<Display::Point>;
-            // points_->clear();
 
             int num_points = json["num_points"];
             Serial.printf("Received %d points\n", num_points);
@@ -147,7 +145,7 @@ private:
             Serial.println("Updated image");
         }
         else if (!info->final || len + aws_data.size() != info->len)
-        {
+        {  // Save to buffer before parsing
             Serial.println("Not final");
             Serial.println("Info len, size, len, index");
             Serial.println(info->len);
@@ -176,7 +174,6 @@ private:
             const uint16_t size = JSON_OBJECT_SIZE(512);
             StaticJsonDocument<size> json;
 
-            // DynamicJsonDocument json{10000};
             DeserializationError err = deserializeJson(json, full_data);
             if (err)
             {
@@ -186,7 +183,6 @@ private:
             }
 
             std::vector<Display::Point> *points = new std::vector<Display::Point>;
-            // points_->clear();
 
             int num_points = json["num_points"];
             Serial.printf("Received %d points\n", num_points);
